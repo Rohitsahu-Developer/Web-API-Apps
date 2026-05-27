@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>All API Apps</title>
+<style>
+  body {
+    font-family: Arial;
+    background: #f4f4f4;
+    padding: 20px;
+    text-align: center;
+  }
+
+  h2 { margin-bottom: 10px; }
+
+  .navBtn {
+    padding: 12px 20px;
+    margin: 8px;
+    border: none;
+    background: #007bff;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  .navBtn:hover {
+    background: #0056b3;
+  }
+
+  .box {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    width: 360px;
+    margin: 25px auto;
+    display: none; /* Default hidden */
+    text-align: left;
+  }
+
+  input, button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+  }
+
+  button {
+    background: #673ab7;
+    color: #fff;
+    border: none;
+    font-size: 16px;
+    border-radius: 5px;
+  }
+
+  button:hover {
+    background: #512da8;
+  }
+
+  img { margin-top: 10px; border-radius: 5px; }
+</style>
+</head>
+<body>
+
+<h2>🌐 All API Apps (Movie + Weather + Translator)</h2>
+
+<!-- Navigation Buttons -->
+<button class="navBtn" onclick="show('movieBox')">🎬 Movie Search</button>
+<button class="navBtn" onclick="show('weatherBox')">☁ Weather</button>
+<button class="navBtn" onclick="show('transBox')">🌎 Translator</button>
+
+<!-- ================= MOVIE APP ================= -->
+<div class="box" id="movieBox">
+  <h3>🎬 Movie Search</h3>
+  <input id="movie" placeholder="Enter movie name">
+  <button onclick="searchMovie()">Search</button>
+  <div id="movieOut"></div>
+</div>
+
+<!-- ================= WEATHER APP ================= -->
+<div class="box" id="weatherBox">
+  <h3>☁ Weather App</h3>
+  <input id="city" placeholder="Enter city name">
+  <button onclick="getWeather()">Get Weather</button>
+  <div id="weatherOut"></div>
+</div>
+
+<!-- ================= TRANSLATOR APP ================= -->
+<div class="box" id="transBox">
+  <h3>🌎 Translator</h3>
+  <input id="txt" placeholder="Enter text">
+  <button onclick="translateText()">Translate to Hindi</button>
+  <div id="transOut"></div>
+</div>
+
+<script>
+// Show/Hide Sections
+function show(id) {
+  document.getElementById('movieBox').style.display = 'none';
+  document.getElementById('weatherBox').style.display = 'none';
+  document.getElementById('transBox').style.display = 'none';
+
+  document.getElementById(id).style.display = 'block';
+}
+
+
+
+// ================= MOVIE SEARCH =================
+function searchMovie() {
+  let name = document.getElementById('movie').value;
+  let out = document.getElementById('movieOut');
+
+  fetch(`https://www.omdbapi.com/?apikey=564727fa&t=${name}`)
+    .then(res => res.json())
+    .then(d => {
+      if (d.Response === "True") {
+        out.innerHTML = `
+          <h3>${d.Title}</h3>
+          ⭐ Rating: ${d.imdbRating}<br>
+          🎭 ${d.Genre}<br>
+          <img src="${d.Poster}" width="150">
+        `;
+      } else {
+        out.innerHTML = "Movie not found!";
+      }
+    });
+}
+
+
+
+// ================= WEATHER APP =================
+function getWeather() {
+  let city = document.getElementById('city').value;
+  let out = document.getElementById('weatherOut');
+
+  fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=439d4b804bc8187953eb36d2a8c26a02&units=metric`)
+    .then(res => res.json())
+    .then(d => {
+      if (d.main) {
+        out.innerHTML = `
+          🌡 Temperature: ${d.main.temp}°C<br>
+          💧 Humidity: ${d.main.humidity}%<br>
+          🌥 Condition: ${d.weather[0].description}
+        `;
+      } else {
+        out.innerHTML = "City not found!";
+      }
+    });
+}
+
+
+
+// ================= TRANSLATOR APP =================
+function translateText() {
+  let text = document.getElementById('txt').value;
+  let out = document.getElementById('transOut');
+
+  fetch(`https://api.mymemory.translated.net/get?q=${text}&langpair=auto|hi`)
+    .then(res => res.json())
+    .then(d => {
+      out.innerHTML = `<h3>${d.responseData.translatedText}</h3>`;
+    });
+}
+</script>
+
+</body>
+</html>
